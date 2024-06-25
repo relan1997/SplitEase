@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+NZ:wght@100..400&display=swap');
+
+.parent-layout{
+  background-color: #09090B;
+  box-sizing: border-box;
+  width:100%;
+  height:100vh;
+  display: flex;
+  padding: 0px;
+  border: 0px solid black;
+  margin:0;
+  padding:0;
+}
+
+.parent-div{
+  color: #06D001;
+  width: 50%;
+  margin: 0px 0px;
+}
+
+.parent-div p{
+  position: relative;
+  top:20%;
+  font-family: "Playwrite NZ";
+  font-size: 1em;
+  margin-left: 5%;
+  margin-right:5%
+}
+
+.parent-div span{
+  font-family: "Playwrite NZ";
+  font-size: 3em;
+}
+
+#left-side{
+  box-shadow: 10px 0px 5px #06D001;
+  transition: 1s;
+}
+
+#right-side{
+  box-shadow: -10px 0px 5px #06D001;
+  transition: 1s;
+}
+
+#left-side:hover{
+  box-shadow: 20px 0px 35px 15px #06D001;
+}
+
+#right-side:hover{
+  box-shadow: -20px 0px 35px 15px #06D001;
+}
+
+.forms{
+  border: 2px solid white;
+  width: 60%;
+  margin:auto;
+  position: relative;
+  top:50%;
+}
+
+.login-flex div{
+  width:40%;
+  margin: auto;
+}
+
