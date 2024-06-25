@@ -51,15 +51,34 @@
 }
 
 .forms{
+    margin: auto;
   border: 2px solid white;
   width: 60%;
   margin:auto;
   position: relative;
-  top:50%;
+  top:30%;
+}
+
+.login-flex{
+    padding: 100px 0px;
 }
 
 .login-flex div{
   width:40%;
   margin: auto;
+}
+
+.login-flex input{
+    background-color: #09090B;
+    border:2px solid #06D001;
+    padding:10px;
+    border-radius: 0rem;
+    color: aliceblue;
+    width: 80%;
+    margin: 30px auto;
+}
+
+.login-flex .button{
+    width: 16%;
 }
 
