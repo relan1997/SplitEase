@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap");
+.parent-div-info {
+  background-color: #f3ff90;
+  color: #059212;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  font-family: "Roboto Slab", serif;
+  font-weight: 700;
+  font-size: 3rem;
+}
+.right-div-info {
+  width: 30%;
+}
+
+.left-div-info {
+  margin-left: 1%;
+  width: 70%;
+}
+
+.left-div-info p {
+  margin-bottom: 10px;
+}
+
+#desc {
+  margin-top: 0;
+  font-size: 1.4rem;
+  font-weight: 300;
+}
+
+#input-boxes-info {
+  width: 100%;
+  display: flex;
+}
+
+#input-fields-info {
+  margin-top: 20px;
+  width: 100%;
+  border: 0px;
+}
+
+#input-fields-info input {
+  width: 25%;
+  background-color: #f3ff90;
+  border: 1px solid black;
+  padding: 8px;
+  margin: 12px 2%;
+}
+
+#add-input-btn {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  top: 10px;
+  margin-left: 10px;
+  color: white;
+  background-color: #9bec00;
+  border: 0px;
+  border-radius: 100%;
+  font-size: 1.8rem;
+  margin-right: 3%;
+}
+
+#input-btn-info {
+  width: 80px;
+}
+
+#input-elements-info {
+  width: 100%;
+}
