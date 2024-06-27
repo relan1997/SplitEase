@@ -1,34 +1,31 @@
 import React from "react";
 import { useState } from "react";
 import "./AddInfo.css";
+import Navbar from "../Navbar/Navbar";
 const AddInfo = ({ username }) => {
   return (
-    <div className="parent-div-info">
-      <div className="left-div-info">
-        <p>Welcome {username}</p>
-        <p id="desc">
-          Please fill in the input boxes below with the name of the person who
-          owes money, the amount they owe, and the name of the person they owe
-          the money to. Note: You have 6 input fields available before
-          submission.
-        </p>
-        <div id="input-boxes-info">
-          <div id="input-fields-info">
-            {[1, 1, 1, 1, 1, 1].map((item) => (
-              <div id="input-elements-info">
-                <input type="text" />
-                <input type="text" />
-                <input type="text" />
-              </div>
-            ))}
-          </div>
-          <div id="input-btn-info">
-            <button id="add-input-btn">+</button>
-          </div>
+    <>
+      <Navbar />
+      <div className="parent-div-info">
+        <div className="greeting-info">
+          <h1>Welcome {username}</h1>
+        </div>
+        <div className="steps-info">
+          Please enter the information in the input boxes below. First, input
+          the name of the person who owes money. Then, enter the amount they
+          owe. Finally, provide the name of the person to whom the money is
+          owed.
+        </div>
+        <div className="input-boxes-info">
+          <input type="text" placeholder="Name1" />
+          <input type="text" id="amt" placeholder="Amount" />
+          <input type="text" placeholder="Name2" id='third-input'/>
+        </div>
+        <div className="button-div-info">
+          <button id='Add'>Add</button>
         </div>
       </div>
-      <div className="right-div-info">Right</div>
-    </div>
+    </>
   );
 };
 

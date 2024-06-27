@@ -1,70 +1,88 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap");
-.parent-div-info {
-  background-color: #f3ff90;
-  color: #059212;
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Playwrite+NG+Modern:wght@100..400&display=swap');
+.parent-div-info{
   width: 100%;
   height: 100vh;
-  display: flex;
-  font-family: "Roboto Slab", serif;
-  font-weight: 700;
-  font-size: 3rem;
-}
-.right-div-info {
-  width: 30%;
+  background-color: #F3FF90;
+  text-align: center;
+  padding-top:10px
 }
 
-.left-div-info {
-  margin-left: 1%;
-  width: 70%;
+.parent-div-info h1{
+  margin: 0;
 }
 
-.left-div-info p {
-  margin-bottom: 10px;
+.greeting-info{
+  font-family: "Lato", sans-serif;
+  color: #059212;
+  font-size: 1.6rem;
 }
 
-#desc {
-  margin-top: 0;
-  font-size: 1.4rem;
-  font-weight: 300;
+.steps-info{
+  margin: auto;
+  font-family: "Lato", sans-serif;
+  color: #059212;
+  width: 60%;
+  font-size: 1.3rem;
+  margin-top:10px;
+  margin-bottom: 20px;
 }
 
-#input-boxes-info {
-  width: 100%;
-  display: flex;
+.input-boxes-info input{
+  text-align: center;
+  width:12%;
+  padding: 5px 10px;
+  margin-right:40px;
+  border-radius: 2rem;
+  border:4px solid #059212;
+  background-color: #9BEC00;
+  color: #F3FF90;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
-#input-fields-info {
+.input-boxes-info input:focus{
+  outline: none;
+}
+
+.input-boxes-info input::placeholder{
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #059212;
+  opacity: 0.6;
+}
+
+#amt{
+  width:5%
+}
+
+
+#Add{
+  font-family: "Lato" ;
   margin-top: 20px;
-  width: 100%;
-  border: 0px;
+  text-align: center;
+  padding:7px 15px;
+  background-color: #059212;
+  border-radius: 0.5rem;
+  border: 0;
+  color:#F3FF90 ;
+  font-weight: 700;
+  transition: 0.5s;
 }
 
-#input-fields-info input {
-  width: 25%;
-  background-color: #f3ff90;
-  border: 1px solid black;
-  padding: 8px;
-  margin: 12px 2%;
+#Add:hover{
+  scale: 1.1;
+  box-shadow:0px 5px 7px #9BEC00;
 }
 
-#add-input-btn {
-  width: 50px;
-  height: 50px;
-  position: relative;
-  top: 10px;
-  margin-left: 10px;
-  color: white;
-  background-color: #9bec00;
-  border: 0px;
-  border-radius: 100%;
-  font-size: 1.8rem;
-  margin-right: 3%;
+#Add:active{
+  scale: 1;
+  box-shadow: none;
+  opacity: 0.2; 
 }
 
-#input-btn-info {
-  width: 80px;
+#third-input{
+  margin-right: 0;
 }
 
-#input-elements-info {
-  width: 100%;
-}
