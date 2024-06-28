@@ -1,33 +1,32 @@
 import React from "react";
-import { useState,useCallback } from "react";
+import { useState } from "react";
 import "./AddInfo.css";
 import Navbar from "../Navbar/Navbar";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+
 const AddInfo = ({ username }) => {
+  const [invalid, setInvalid] = useState("");
+  const [transactions, setTransactions] = useState([]);
+  const [name1, setName1] = useState("");
+  const [amt, setAmt] = useState(0);
+  const [name2, setName2] = useState("");
 
-  const [invalid,setInvalid] = useState('')
-  const [transactions,setTransactions] = useState([])
-  const [name1,setName1] = useState('')
-  const [amt,setAmt] = useState(0)
-  const [name2,setName2] =useState('');
-
-  const submitInfo=()=>{
-    if(name1.trim() === '' || name2.trim() === '' || amt<=0){
-      console.log("hey")
-      setInvalid("Enter Info isn't Valid Or Incomplete!")
-      console.log(invalid)
+  const submitInfo = () => {
+    if (name1.trim() === "" || name2.trim() === "" || amt <= 0 || amt==='') {
+      setInvalid("Info isn't Valid");
+    } else {
+      const statement = `${name1.charAt(0).toUpperCase() + name1.slice(1)} owes ${amt} to ${name2.charAt(0).toUpperCase() + name2.slice(1)}`;
+      setTransactions((prev) => {
+        return [...prev, statement];
+      });
+      setName1("");
+      setAmt(0);
+      setName2("");
+      setInvalid("");
     }
-    else{
-    const statement = `${name1} owes ${amt} to ${name2}`;
-    console.log(statement)
-    setTransactions((prev)=>{
-      return [...prev,statement]
-    });
-    setName1('');
-    setAmt(0);
-    setName2('');
-    setInvalid('');
-  }
-  }
+  };
+
   return (
     <>
       <Navbar />
@@ -42,24 +41,43 @@ const AddInfo = ({ username }) => {
           owed.
         </div>
         <div className="input-boxes-info">
-          <input type="text" placeholder="Name1" value={name1} onChange={(e)=>setName1(e.target.value)}/>
-          <input type="number" id="amt" placeholder="Amount" value={amt} onChange={(e)=>setAmt(e.target.value)} />
-          <input type="text" placeholder="Name2" id='third-input' value={name2} onChange={(e)=>setName2(e.target.value)}/>
+          <input
+            type="text"
+            placeholder="Name1"
+            value={name1}
+            onChange={(e) => setName1(e.target.value)}
+          />
+          <input
+            type="number"
+            id="amt"
+            placeholder="Amount"
+            value={amt}
+            onChange={(e) => setAmt(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Name2"
+            id="third-input"
+            value={name2}
+            onChange={(e) => setName2(e.target.value)}
+          />
         </div>
         <div className="button-div-info">
-          <button id='Add' onClick={submitInfo}>Add</button>
-          {invalid.length>0 && <div>
-              {invalid}
-            </div>}
+          <button id="Add" onClick={submitInfo}>
+            Add
+          </button>
+          {invalid.length > 0 && <div className="invalid-box-info">{invalid}</div>}
         </div>
         <div className="transaction-list">
-            {transactions.length>0 && transactions.map((item,ind)=>{
-              return(
+          {transactions.length > 0 &&
+            transactions.map((item, ind) => {
+              return (
                 <div key={ind}>
-                  {item}
-                  <button>Edit</button><button>Delete</button>
+                  {item}<br/>
+                  <span className="edit-btn-info"><EditIcon style={{ color: '#4B70F5' }} /></span>
+                  <span className="delete-btn-info"><DeleteIcon style={{ color: '#ff0033' }} /></span>
                 </div>
-              )
+              );
             })}
         </div>
       </div>

@@ -53,10 +53,15 @@
   opacity: 0.6;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 #amt{
   width:8%
 }
-
 
 #Add{
   font-family: "Lato" ;
@@ -84,5 +89,31 @@
 
 #third-input{
   margin-right: 0;
+}
+
+.invalid-box-info{
+  background-color: #ff0033;
+  color: aliceblue;
+  width:7%;
+  padding: 14px 3px;
+  margin: auto;
+  margin-top: 20px;
+  font-family: "Lato", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 1rem;
+}
+
+
+.transaction-list{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 10px;
+  margin-top: 20px;
+  gap:20px;
+  font-family: 'Lato';
+  color: #047d10;
+  font-weight: 700;
 }
 
