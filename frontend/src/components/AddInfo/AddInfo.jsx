@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import "./AddInfo.css";
 import Navbar from "../Navbar/Navbar";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { loadState } from "../../store/sessionMethods";
+import {useDispatch} from 'react-redux'
 
 const AddInfo = ({ username }) => {
   const [invalid, setInvalid] = useState("");
@@ -11,6 +13,13 @@ const AddInfo = ({ username }) => {
   const [name1, setName1] = useState("");
   const [amt, setAmt] = useState(0);
   const [name2, setName2] = useState("");
+
+  const dispatch = useDispatch();
+  useEffect(()=>{
+    const curr_transactions = loadState(process.env.SESSION_KEY)
+    setTransactions(curr_transactions);
+  },[])
+
 
   const submitInfo = () => {
     if (name1.trim() === "" || name2.trim() === "" || amt <= 0 || amt==='') {
