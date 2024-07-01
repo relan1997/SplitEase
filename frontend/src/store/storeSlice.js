@@ -16,13 +16,13 @@ export  const sliceMethods = createSlice({
     },
     removeFromState: (state, action) => {
        state.transactions= state.transactions.filter(
-        (item) => item.id !== action.payload.data
+        (item,ind) => ind !== action.payload.ind
       );
       saveState('INDT20WC_290624', state.transactions);
     },
     updateState: (state, action) => {
-        state.transactions = state.transactions.map((item) =>
-          item.id === action.payload.id ? action.payload.data : item
+        state.transactions = state.transactions.map((item,ind) =>
+          ind === action.payload.ind ? action.payload.data : item
         );
         saveState('INDT20WC_290624', state.transactions);
       },
