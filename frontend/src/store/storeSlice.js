@@ -2,7 +2,7 @@ import { createSlice} from "@reduxjs/toolkit";
 import { loadState, saveState } from "./sessionMethods";
 
 const initialState = {
-  transactions: loadState(process.env.SESSION_KEY, []),
+  transactions: loadState('INDT20WC_290624', []),
 };
 
 export  const sliceMethods = createSlice({
@@ -10,21 +10,21 @@ export  const sliceMethods = createSlice({
   initialState,
   reducers: {
     addToState: (state, action) => {
-      const item = action.payload;
-      state.transactions.push(item);
-      saveState(process.env.SESSION_KEY, state.transactions);
+      const item = action.payload.data;
+      state.transactions =[...state.transactions,item]
+      saveState('INDT20WC_290624', state.transactions);
     },
     removeFromState: (state, action) => {
        state.transactions= state.transactions.filter(
-        (item) => item.id !== action.payload
+        (item) => item.id !== action.payload.data
       );
-      saveState(process.env.SESSION_KEY, state.transactions);
+      saveState('INDT20WC_290624', state.transactions);
     },
     updateState: (state, action) => {
         state.transactions = state.transactions.map((item) =>
           item.id === action.payload.id ? action.payload.data : item
         );
-        saveState(process.env.SESSION_KEY, state.transactions);
+        saveState('INDT20WC_290624', state.transactions);
       },
   },
 });

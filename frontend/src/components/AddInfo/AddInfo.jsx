@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { loadState } from "../../store/sessionMethods";
 import {useDispatch} from 'react-redux'
+import { addToState } from "../../store/storeSlice";
 
 const AddInfo = ({ username }) => {
   const [invalid, setInvalid] = useState("");
@@ -16,9 +17,9 @@ const AddInfo = ({ username }) => {
 
   const dispatch = useDispatch();
   useEffect(()=>{
-    const curr_transactions = loadState(process.env.SESSION_KEY)
+    const curr_transactions = loadState('INDT20WC_290624','')
     setTransactions(curr_transactions);
-  },[])
+  })
 
 
   const submitInfo = () => {
@@ -26,6 +27,7 @@ const AddInfo = ({ username }) => {
       setInvalid("Info isn't Valid");
     } else {
       const statement = `${name1.charAt(0).toUpperCase() + name1.slice(1)} owes ${amt} to ${name2.charAt(0).toUpperCase() + name2.slice(1)}`;
+      dispatch(addToState({id:'',data:statement}));
       setTransactions((prev) => {
         return [...prev, statement];
       });
@@ -78,7 +80,7 @@ const AddInfo = ({ username }) => {
           {invalid.length > 0 && <div className="invalid-box-info">{invalid}</div>}
         </div>
         <div className="transaction-list">
-          {transactions.length > 0 &&
+          {transactions.length  > 0 &&
             transactions.map((item, ind) => {
               return (
                 <div key={ind}>
