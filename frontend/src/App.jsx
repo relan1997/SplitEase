@@ -6,8 +6,8 @@ import AddInfo from "./components/AddInfo/AddInfo";
 function App() {
   return (
     <>
-      {/* <HomePage/> */}
-      <AddInfo username={'Harshal'}/>
+      <HomePage/>
+      {/* <AddInfo username={'Harshal'}/> */}
     </>
   );
 }
