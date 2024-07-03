@@ -10,9 +10,10 @@ const HomePage = () => {
     const formSubmission = async (data) => {
         try {
             const response = await axios.post('http://localhost:8080/api/sign-in',data)
-            if(!response) throw new Error("no response recieved")
+            if(!response) throw new Error( "There is some error")
+            console.log(response);
         } catch (error) {
-            console.error("Some error in the form", error);
+            console.error(error.response?.data, error);
         }
     };
 

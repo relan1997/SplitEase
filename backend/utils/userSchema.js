@@ -18,4 +18,8 @@ const userSchema = v.object({
     ),
 });
 
+export const userValidation = async (req,res,next)=>{
+  
+}
+
 export default userSchema
