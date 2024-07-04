@@ -6,12 +6,14 @@ import cors from "cors";
 import catchAsync from "./utils/catchAsync.js";
 import checkUniqueUsername from "./utils/checkUniqueUsername.js";
 import bcrypt from "bcryptjs";
+import cookieParser from "cookie-parser";
 
 mongoose.connect("mongodb://127.0.0.1:27017/split-easy");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser())
 
 app.post(
   "/api/sign-in",
@@ -22,6 +24,7 @@ app.post(
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = new User({ username, password:hashedPassword });
     await user.save();
+
     return res.status(200).send("User has been saved successfully");
     }catch(err)
     {
