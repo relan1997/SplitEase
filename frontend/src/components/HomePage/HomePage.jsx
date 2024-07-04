@@ -3,13 +3,18 @@ import { useState } from "react";
 import "./HomePage.css";
 import { useForm } from 'react-hook-form';
 import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 const HomePage = () => {
     const [error, setError] = useState('');
     const { register, formState: { errors }, handleSubmit } = useForm();
-
+    const navigate=useNavigate()
     const formSubmission = async (data) => {
         try {
             const response = await axios.post('http://localhost:8080/api/sign-in',data)
+            if(response)
+            {
+                navigate('/addInfo')
+            }
             if(!response) throw new Error( "There is some error")
             console.log(response);
         } catch (error) {
