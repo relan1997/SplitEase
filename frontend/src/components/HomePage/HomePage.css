@@ -50,7 +50,7 @@
   box-shadow: -20px 0px 35px 15px #06D001;
 }
 
-.forms{
+.forms-left{
     margin: auto;
   border: 2px solid white;
   width: 60%;
@@ -59,7 +59,7 @@
   top:30%;
 }
 
-.login-flex{
+/* .login-flex{
     padding: 100px 0px;
 }
 
@@ -85,4 +85,4 @@
 .error-para{
   color: aliceblue;
 }
-
+ */
