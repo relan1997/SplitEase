@@ -7,22 +7,22 @@ import { useNavigate } from "react-router-dom";
 const HomePage = () => {
   const [error, setError] = useState("");
   const {
-    register:signUpRegister,
-    formState: { errors:errorsSignUp },
-    handleSubmit:handleSignUp,
+    register: signUpRegister,
+    formState: { errors: errorsSignUp },
+    handleSubmit: handleSignUp,
   } = useForm();
 
-  const{
-    register:signInRegister,
-    formState:{errors:errorsSignIn},
-    handleSubmit:handleSignIn,
+  const {
+    register: signInRegister,
+    formState: { errors: errorsSignIn },
+    handleSubmit: handleSignIn,
   } = useForm();
 
   const navigate = useNavigate();
   const signUpFormSubmission = async (data) => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/sign-in",
+        "http://localhost:8080/api/sign-up",
         data
       );
       if (response) {
@@ -36,8 +36,22 @@ const HomePage = () => {
   };
 
   const signInFormSubmission = async (data) => {
-    const { username, password } = data;
-    console.log(username, password);
+    try {
+      const { username, password } = data;
+      const response = await axios.post(
+        "http://localhost:8080/api/sign-in",
+        data
+      );
+      if (response) {
+        navigate("/addInfo");
+      }
+      if (!response) {
+        throw new Error("There is some error with sign up");
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error.response?.data, error);
+    }
   };
 
   const getErrorMessage = (error) => {
@@ -86,7 +100,9 @@ const HomePage = () => {
                   })}
                   aria-invalid={errorsSignUp.username ? "true" : "false"}
                 />
-                {errorsSignUp.username && <p>{getErrorMessage(errorsSignUp.username)}</p>}
+                {errorsSignUp.username && (
+                  <p>{getErrorMessage(errorsSignUp.username)}</p>
+                )}
 
                 <input
                   type="password"
@@ -106,7 +122,9 @@ const HomePage = () => {
                   })}
                   aria-invalid={errorsSignUp.password ? "true" : "false"}
                 />
-                {errorsSignUp.password && <p>{getErrorMessage(errorsSignUp.password)}</p>}
+                {errorsSignUp.password && (
+                  <p>{getErrorMessage(errorsSignUp.password)}</p>
+                )}
 
                 <button type="submit">Submit</button>
               </form>
@@ -125,7 +143,9 @@ const HomePage = () => {
               <input
                 type="password"
                 placeholder="Password"
-                {...signInRegister("password", { required: "Password is required" })}
+                {...signInRegister("password", {
+                  required: "Password is required",
+                })}
               />
 
               <button type="submit"> Login</button>
