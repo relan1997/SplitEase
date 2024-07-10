@@ -23,9 +23,11 @@ const HomePage = () => {
     try {
       const response = await axios.post(
         "http://localhost:8080/api/sign-up",
-        data
+        data,
+        { withCredentials: true }
       );
       if (response) {
+        setError('');
         navigate("/addInfo");
       }
       if (!response) throw new Error("There is some error");
@@ -37,12 +39,13 @@ const HomePage = () => {
 
   const signInFormSubmission = async (data) => {
     try {
-      const { username, password } = data;
       const response = await axios.post(
         "http://localhost:8080/api/sign-in",
-        data
+        data,
+        { withCredentials: true }
       );
       if (response) {
+        setError('');
         navigate("/addInfo");
       }
       if (!response) {
@@ -51,6 +54,8 @@ const HomePage = () => {
       console.log(response);
     } catch (error) {
       console.log(error.response?.data, error);
+      setError(error.response?.data.error.message)
+
     }
   };
 
@@ -58,13 +63,13 @@ const HomePage = () => {
     if (error) {
       switch (error.type) {
         case "required":
-          return "This field is required";
+          setError("This field is required");
         case "minLength":
-          return `Minimum length is 8`;
+          setError(`Minimum length is 8`);
         case "pattern":
-          return "Password must contain one uppercase letter, one lowercase letter, one number, and one special character";
+          setError("Password must contain one uppercase letter, one lowercase letter, one number, and one special character");
         default:
-          return "Invalid input";
+          setError("Invalid input");
       }
     }
   };
@@ -123,7 +128,7 @@ const HomePage = () => {
                   aria-invalid={errorsSignUp.password ? "true" : "false"}
                 />
                 {errorsSignUp.password && (
-                  <p>{getErrorMessage(errorsSignUp.password)}</p>
+                  getErrorMessage(errorsSignUp.password)
                 )}
 
                 <button type="submit">Submit</button>
@@ -150,6 +155,7 @@ const HomePage = () => {
 
               <button type="submit"> Login</button>
             </form>
+            {error && <div>{error}</div>}
           </div>
         </div>
       </div>
