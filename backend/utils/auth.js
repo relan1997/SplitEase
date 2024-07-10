@@ -1,4 +1,6 @@
 import jwt from "jsonwebtoken";
+import AppError from "./AppError.js";
+import cookieParser from "cookie-parser";
 
 export const setToken = (user) => {
   const payload = {
@@ -11,5 +13,22 @@ export const setToken = (user) => {
 };
 
 export const getUser = (token)=>{
-    return jwt.verify(token,'INDT20WC_290624')
+    try { 
+      if(!token) throw new AppError("token not found",404)
+      return jwt.verify(token,'INDT20WC_290624')
+    } catch (error) {
+      next(error);
+    }    
+}
+
+export const verifyToken=(req,res,next)=>{
+  try {
+    const token = req.cookieParser.token;
+    if(!token)
+      throw new AppError("no token provided",401);
+    const decoded=getUser(token);
+    req.user=decoded
+  } catch (error) {
+    next(error)
+  }
 }
