@@ -21,7 +21,7 @@ const Login = () => {
           console.log("Login req sent to backend");
           const token = res.data.token;
           localStorage.setItem("authToken", token);
-          navigate("/");
+          navigate("/names");
         } else {
           console.log("Unexpected Error");
         }

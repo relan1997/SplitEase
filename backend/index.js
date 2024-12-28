@@ -19,6 +19,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const blacklist = []; 
+const authenticateToken = (req, res, next) => {
+  const token = req.header("Authorization");
+  console.log("Inside middleware",token,blacklist)
+  if (!token)
+    return res.status(401).json({ message: "Token missing or invalid" });
+  if (blacklist.includes(token)) {
+    return res.status(403).json({ message: "Token has been invalidated" });
+  }
+  jwt.verify(token, "1234", (err, user) => {
+    if (err) return res.status(403).json({ message: "Token is invalid" });
+    req.user = user;
+    next();
+  });
+};
+
 app.post("/register", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -61,9 +77,12 @@ app.post("/protect", async (req, res) => {
   const token = req.header("Authorization");
   if (!token) return res.status(401).json({ error: "Access denied" });
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(token);
+    const decoded = jwt.verify(token, "1234");
+    console.log(decoded);
     req.userId = decoded.userId;
     req.username = decoded.username;
+    console.log(req.userId, req.username);
     res.status(200).json({ message: "Valid Token", username: req.username });
   } catch (error) {
     if (error.name === "TokenExpiredError") {
@@ -72,6 +91,16 @@ app.post("/protect", async (req, res) => {
       res.status(401).json({ error: "Invalid token" });
     }
   }
+});
+
+app.post("/logout", authenticateToken, (req, res) => {
+  const token = req.header("Authorization");
+  console.log("Inside route",token)
+  if (!token) {
+    return res.status(400).json({ message: "No token provided" });
+  }
+  blacklist.push(token);
+  res.status(200).json({ message: "Logout successful" });
 });
 
 app.listen(8080, () => {

@@ -24,7 +24,7 @@ const Register = () => {
       .then((res) => {
         console.log("Login successful");
         localStorage.setItem("authToken", res.data.token); // Save the JWT token
-        navigate("/"); // Redirect to the home page
+        navigate("/names"); // Redirect to the home page
       })
       .catch((err) => {
         if (err.response) {
