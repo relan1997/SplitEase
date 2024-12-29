@@ -11,8 +11,16 @@ export const sliceMethods = createSlice({
   initialState,
   reducers: {
     addTransaction: (state, action) => {
-      const item = action.payload.data;
-      state.transactions = [...state.transactions, item];
+      const item = action.payload.data; // item is an array of arrays
+      console.log("Original Transactions:", state.transactions);
+      console.log("New Item to Replace:", item);
+    
+      // Flatten the new item and set it as the new state for transactions
+      state.transactions = item.flat();
+    
+      console.log("Updated Transactions:", state.transactions);
+    
+      // Save the updated transactions back to sessionStorage
       saveState("transactions", state.transactions);
     },
 

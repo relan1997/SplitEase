@@ -71,6 +71,10 @@ const Names = () => {
     setSelectedNames([]);
   };
 
+  const sendNames=()=>{
+    navigate("/transactions")
+  }
+
   return (
     <>
       <h1>Enter the names of all the users involved</h1>
@@ -99,7 +103,7 @@ const Names = () => {
       {selectedNames.length > 0 && (
         <button onClick={removeSelected}>Remove Selected</button>
       )}
-
+      <button onClick={sendNames}>Confirm Users</button>
       <Logout />
     </>
   );
