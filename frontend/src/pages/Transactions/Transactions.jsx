@@ -1,9 +1,65 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useDispatch } from "react-redux";
 import { loadState } from "../../store/sessionMethods";
 import { addTransaction, removeTransaction } from "../../store/sliceMethods";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const CheckboxList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 400px;
+`;
+
+const CheckboxItem = styled.li`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+
+const TransactionsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+`;
+
+const TransactionColumn = styled.div`
+  flex: 1;
+  min-width: 200px;
+`;
+
+const Button = styled.button`
+  width: fit-content;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
 
 const Transactions = () => {
   const [payerName, setPayerName] = useState("");
@@ -12,6 +68,7 @@ const Transactions = () => {
   const [names, setNames] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [selectedTransactions, setSelectedTransactions] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -77,6 +134,11 @@ const Transactions = () => {
     setTransactions(temp);
   }, []);
 
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    setSelectedPeople(selectAll ? [] : [...names]);
+  };
+
   const handleSubmit = () => {
     if (payerName && amount && selectedPeople.length) {
       if (!names.includes(payerName)) {
@@ -132,7 +194,7 @@ const Transactions = () => {
       )
       .then((res) => {
         if (res.data) {
-            console.log(res.data)
+          console.log(res.data);
           navigate("/result", { state: { result: res.data } });
         }
       })
@@ -142,8 +204,8 @@ const Transactions = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div style={{ display: "flex", gap: "10px" }}>
+    <PageContainer>
+      <InputGroup>
         <input
           type="text"
           placeholder="Name of payer"
@@ -156,14 +218,17 @@ const Transactions = () => {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-      </div>
+      </InputGroup>
 
       <div>
         <h3>Select people the amount is paid for:</h3>
-        <ul style={{ listStyleType: "none", padding: 0 }}>
+        <button onClick={handleSelectAll}>{
+          selectAll ? "Deselect All" : "Select All"
+        }</button>
+        <CheckboxList>
           {names != null &&
             names.map((name, index) => (
-              <li key={index}>
+              <CheckboxItem key={index}>
                 <label>
                   <input
                     type="checkbox"
@@ -172,58 +237,51 @@ const Transactions = () => {
                   />
                   {name}
                 </label>
-              </li>
+              </CheckboxItem>
             ))}
-        </ul>
+        </CheckboxList>
       </div>
 
-      <button onClick={handleSubmit} style={{ width: "fit-content" }}>
-        Submit Transaction
-      </button>
-
-      <button
-        onClick={handleFinalizeTransactions}
-        style={{ width: "fit-content" }}
-      >
-        Finalize Transactions
-      </button>
+      <Button onClick={handleSubmit}>Submit Transaction</Button>
+      <Button onClick={handleFinalizeTransactions}>Finalize Transactions</Button>
 
       <div>
         <h3>Transactions:</h3>
-        {transactions.length > 0 ? (
-          <>
-            <ul>
-              {transactions
-                .flat()
-                .filter(
-                  (transaction) =>
-                    transaction && transaction.payer && transaction.payee
+        <TransactionsContainer>
+          {transactions.length > 0 ? (
+            <>
+              {[...Array(Math.ceil(transactions.length / 10)).keys()].map(
+                (colIndex) => (
+                  <TransactionColumn key={colIndex}>
+                    {transactions
+                      .slice(colIndex * 10, (colIndex + 1) * 10)
+                      .map((transaction, index) => (
+                        <label key={index}>
+                          <input
+                            type="checkbox"
+                            checked={selectedTransactions.includes(index)}
+                            onChange={() => toggleTransactionSelection(index)}
+                          />
+                          {transaction.payer} paid {transaction.amount} for {" "}
+                          {transaction.payee}
+                        </label>
+                      ))}
+                  </TransactionColumn>
                 )
-                .map((transaction, index) => (
-                  <li key={index}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={selectedTransactions.includes(index)}
-                        onChange={() => toggleTransactionSelection(index)}
-                      />
-                      {transaction.payer} paid {transaction.amount} for{" "}
-                      {transaction.payee}
-                    </label>
-                  </li>
-                ))}
-            </ul>
-            {selectedTransactions.length > 0 && (
-              <button onClick={removeSelectedTransactions}>
-                Remove Selected Transactions
-              </button>
-            )}
-          </>
-        ) : (
-          <p>No transactions recorded.</p>
+              )}
+            </>
+          ) : (
+            <p>No transactions recorded.</p>
+          )}
+        </TransactionsContainer>
+
+        {selectedTransactions.length > 0 && (
+          <Button onClick={removeSelectedTransactions}>
+            Remove Selected Transactions
+          </Button>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 };
 
