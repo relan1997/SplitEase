@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { loadState } from "../../store/sessionMethods";
 import { addTransaction, removeTransaction } from "../../store/sliceMethods";
+import { useNavigate } from "react-router-dom";
 
 const Transactions = () => {
   const [payerName, setPayerName] = useState("");
@@ -12,6 +13,7 @@ const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [selectedTransactions, setSelectedTransactions] = useState([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleCheckboxChange = (person) => {
     setSelectedPeople((prev) =>
@@ -23,9 +25,7 @@ const Transactions = () => {
 
   const toggleTransactionSelection = (index) => {
     setSelectedTransactions((prev) =>
-      prev.includes(index)
-        ? prev.filter((i) => i !== index)
-        : [...prev, index]
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
 
@@ -34,7 +34,6 @@ const Transactions = () => {
       (transaction, index) => !selectedTransactions.includes(index)
     );
 
-    // Dispatch action to remove transactions
     selectedTransactions.forEach((index) =>
       dispatch(removeTransaction({ ind: index }))
     );
@@ -70,13 +69,11 @@ const Transactions = () => {
 
   useEffect(() => {
     const users = loadState("users", []);
-    console.log(users);
     setNames(users ? users : []);
   }, []);
 
   useEffect(() => {
     const temp = loadState("transactions", []);
-    console.log("Loaded Transactions:", temp);
     setTransactions(temp);
   }, []);
 
@@ -119,6 +116,31 @@ const Transactions = () => {
     }
   };
 
+  const handleFinalizeTransactions = () => {
+    axios
+      .post(
+        "http://localhost:8080/find_min_transactions",
+        {
+          names,
+          transactions,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("authToken"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data) {
+            console.log(res.data)
+          navigate("/result", { state: { result: res.data } });
+        }
+      })
+      .catch((err) => {
+        console.error("Error finalizing transactions", err);
+      });
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div style={{ display: "flex", gap: "10px" }}>
@@ -157,6 +179,13 @@ const Transactions = () => {
 
       <button onClick={handleSubmit} style={{ width: "fit-content" }}>
         Submit Transaction
+      </button>
+
+      <button
+        onClick={handleFinalizeTransactions}
+        style={{ width: "fit-content" }}
+      >
+        Finalize Transactions
       </button>
 
       <div>

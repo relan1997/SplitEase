@@ -4,6 +4,10 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "./models/userModel.js";
+import { calculateNetBalances } from "./helper/calculateNetBalances.js";
+import { maxFlowAlgo } from "./helper/maxFlowAlgo.js";
+import { bfs } from "./helper/bfs.js";
+import { createFlowGraphMatrix } from "./helper/createFlowGraphMatrix.js";
 mongoose
   .connect(
     "mongodb+srv://harshal:LtXwFJc0sH8O96GX@cluster0.u57rmde.mongodb.net/splitEase?retryWrites=true&w=majority&appName=Cluster0"
@@ -19,10 +23,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const blacklist = []; 
+const blacklist = [];
 const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization");
-  console.log("Inside middleware",token,blacklist)
+  console.log(token);
+  console.log("Inside middleware", token, blacklist);
   if (!token)
     return res.status(401).json({ message: "Token missing or invalid" });
   if (blacklist.includes(token)) {
@@ -95,12 +100,70 @@ app.post("/protect", async (req, res) => {
 
 app.post("/logout", authenticateToken, (req, res) => {
   const token = req.header("Authorization");
-  console.log("Inside route",token)
+  console.log("Inside route", token);
   if (!token) {
     return res.status(400).json({ message: "No token provided" });
   }
   blacklist.push(token);
   res.status(200).json({ message: "Logout successful" });
+});
+
+app.post("/find_min_transactions", authenticateToken, (req, res) => {
+  const { names:users, transactions } = req.body;
+
+  if (!Array.isArray(users) || users.length === 0) {
+    return res.status(400).send("Invalid users array.");
+  }
+
+  if (!Array.isArray(transactions) || transactions.length === 0) {
+    return res.status(400).send("Invalid transactions array.");
+  }
+
+  const names = [...users];
+  names.unshift("source");
+  names.push("destination");
+
+  const nameToIndex = new Map();
+  names.forEach((name, index) => {
+    nameToIndex.set(name, index);
+  });
+
+  const { creditors, debtors } = calculateNetBalances(
+    names,
+    transactions,
+    nameToIndex
+  );
+
+  const flowGraph = createFlowGraphMatrix(
+    names,
+    creditors,
+    debtors,
+    nameToIndex
+  );
+
+  const paths = [];
+  const amtPending = [];
+
+  const maxFlow = maxFlowAlgo(
+    flowGraph,
+    0,
+    flowGraph.length - 1,
+    paths,
+    amtPending
+  );
+
+  const resultPaths = paths.map((path, index) => ({
+    from: names[path[1]],
+    to: names[path[2]],
+    amount: amtPending[index],
+  }));
+
+  console.log(maxFlow,resultPaths)
+
+  res.json({
+    maxFlow,
+    transactions: resultPaths,
+  });
 });
 
 app.listen(8080, () => {
