@@ -4,15 +4,49 @@ import { useDispatch } from "react-redux";
 import { loadState } from "../../store/sessionMethods";
 import { addTransaction, removeTransaction } from "../../store/sliceMethods";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { createGlobalStyle, keyframes } from "styled-components";
+import Logout from "../../components/Logout";
+
+const GlobalStyle = createGlobalStyle`
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Noto Serif JP', serif;
+  }
+`;
 
 const PageContainer = styled.div`
   display: flex;
-  flex-direction: column;
   gap: 20px;
   padding: 20px;
-  max-width: 1200px;
-  margin: auto;
+  max-width: 100vw;
+  height: 100vh;
+  background-color: #e9efec;
+  overflow-x: hidden;
+`;
+
+const InputSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #c4dad2;
+  padding: 20px;
+  border-radius: 10px;
+  overflow-y: auto;
+`;
+
+const TransactionsSection = styled.div`
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  background-color: #c4dad2;
+  padding: 20px;
+  border-radius: 10px;
+  overflow-y: auto;
 `;
 
 const InputGroup = styled.div`
@@ -20,46 +54,136 @@ const InputGroup = styled.div`
   gap: 10px;
 `;
 
+const StyledInput = styled.input`
+  padding: 10px;
+  border: 2px solid #6a9c89;
+  border-radius: 5px;
+  flex: 1;
+  background-color: #e9efec;
+  font-size: 16px;
+  &:focus {
+    outline: none;
+    border-color: #16423c;
+  }
+    margin-bottom:10px;
+`;
+
 const CheckboxList = styled.ul`
   list-style-type: none;
   padding: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
-  max-width: 400px;
+  margin-top:10px;
 `;
 
 const CheckboxItem = styled.li`
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: space-between;
+  background-color: #6a9c89;
+  border-radius: 20px;
+  padding: 5px 10px;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &.selected {
+    background-color: #16423c;
+  }
 `;
 
 const TransactionsContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  max-height: 400px;
+  flex-direction: column; /* Change from wrap to column */
+  gap: 10px;
   overflow-y: auto;
+  height: calc(100vh - 100px);
+  margin: 20px 0;
 `;
 
 const TransactionColumn = styled.div`
   flex: 1;
-  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;
 
-const Button = styled.button`
-  width: fit-content;
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
+const TransactionItem = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 5rem;
+  gap: 10px;
+  cursor: pointer;
+`;
+
+const TransactionCheckbox = styled.input`
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #6a9c89; /* Fill color */
+  cursor: pointer;
+  &:checked {
+    background-color: #16423c; /* Checked color */
+  }
+`;
+
+const scaleUp = keyframes`
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.03);
+    }
+    100% {
+        transform: scale(1);
+    }
+`;
+
+const StyledButton = styled.button`
+  padding: 10px;
+  background-color: #16423c;
+  color: #e9efec;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s; /* Transition for background color and transform */
+
   &:hover {
-    background-color: #0056b3;
+    background-color: #6a9c89;
+    animation: ${scaleUp} 0.3s ease-in-out; /* Scale animation on hover */
+  }
+
+  &:active {
+    transform: scale(0.95); /* Slightly shrink on click */
   }
 `;
+
+const SubmitButton = styled(StyledButton)`
+   margin-right: 10px; /* Add left margin */
+`;
+
+const FinalizeButton=styled(StyledButton)`
+    margin-bottom:10px;
+`;
+
+
+const FontPreconnect = () => (
+  <>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossOrigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500&display=swap"
+      rel="stylesheet"
+    />
+  </>
+);
 
 const Transactions = () => {
   const [payerName, setPayerName] = useState("");
@@ -78,6 +202,40 @@ const Transactions = () => {
         ? prev.filter((p) => p !== person)
         : [...prev, person]
     );
+  };
+
+  const handleFinalizeTransactions = () => {
+    axios
+      .post(
+        "http://localhost:8080/find_min_transactions",
+        {
+          names,
+          transactions,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("authToken"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data) {
+          console.log(res.data);
+          navigate("/result", { state: { result: res.data } });
+        }
+      })
+      .catch((err) => {
+        console.error("Error finalizing transactions", err);
+      });
+  };
+
+  const handleSelectAllUsers = () => {
+    if (selectAll) {
+      setSelectedPeople([]); // Deselect all
+    } else {
+      setSelectedPeople(names); // Select all
+    }
+    setSelectAll(!selectAll); // Toggle select all state
   };
 
   const toggleTransactionSelection = (index) => {
@@ -134,12 +292,8 @@ const Transactions = () => {
     setTransactions(temp);
   }, []);
 
-  const handleSelectAll = () => {
-    setSelectAll(!selectAll);
-    setSelectedPeople(selectAll ? [] : [...names]);
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (payerName && amount && selectedPeople.length) {
       if (!names.includes(payerName)) {
         alert("Payer name does not match any names in the list.");
@@ -173,115 +327,107 @@ const Transactions = () => {
       setPayerName("");
       setAmount("");
       setSelectedPeople([]);
+      setSelectAll(false);
     } else {
       alert("Please fill all fields and select at least one person.");
     }
-  };
 
-  const handleFinalizeTransactions = () => {
-    axios
-      .post(
-        "http://localhost:8080/find_min_transactions",
-        {
-          names,
-          transactions,
-        },
-        {
-          headers: {
-            Authorization: localStorage.getItem("authToken"),
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data) {
-          console.log(res.data);
-          navigate("/result", { state: { result: res.data } });
-        }
-      })
-      .catch((err) => {
-        console.error("Error finalizing transactions", err);
-      });
+    const toggleTransactionSelection = (index) => {
+      setSelectedTransactions((prev) =>
+        prev.includes(index)
+          ? prev.filter((i) => i !== index)
+          : [...prev, index]
+      );
+    };
+
+    const removeSelectedTransactions = () => {
+      const remainingTransactions = transactions.filter(
+        (_, index) => !selectedTransactions.includes(index)
+      );
+      selectedTransactions.forEach((index) =>
+        dispatch(removeTransaction({ ind: index }))
+      );
+      setTransactions(remainingTransactions);
+      setSelectedTransactions([]);
+    };
   };
 
   return (
-    <PageContainer>
-      <InputGroup>
-        <input
-          type="text"
-          placeholder="Name of payer"
-          value={payerName}
-          onChange={(e) => setPayerName(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Amount paid"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-      </InputGroup>
-
-      <div>
-        <h3>Select people the amount is paid for:</h3>
-        <button onClick={handleSelectAll}>{
-          selectAll ? "Deselect All" : "Select All"
-        }</button>
-        <CheckboxList>
-          {names != null &&
-            names.map((name, index) => (
-              <CheckboxItem key={index}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selectedPeople.includes(name)}
-                    onChange={() => handleCheckboxChange(name)}
-                  />
+    <>
+      <GlobalStyle />
+      <FontPreconnect />
+      <PageContainer>
+        <InputSection>
+          <form onSubmit={handleSubmit}>
+            <InputGroup>
+              <StyledInput
+                type="text"
+                placeholder="Name of payer"
+                value={payerName}
+                onChange={(e) => setPayerName(e.target.value)}
+              />
+              <StyledInput
+                type="number"
+                placeholder="Amount paid"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </InputGroup>
+            <h3>Select people the amount is paid for:</h3>
+            <CheckboxList>
+              <StyledButton type="button" onClick={handleSelectAllUsers}>
+                {selectAll ? "Deselect All" : "Select All"}
+              </StyledButton>
+              {names.map((name, index) => (
+                <CheckboxItem
+                  key={index}
+                  className={selectedPeople.includes(name) ? "selected" : ""}
+                  onClick={() => handleCheckboxChange(name)}
+                >
                   {name}
-                </label>
-              </CheckboxItem>
+                </CheckboxItem>
+              ))}
+            </CheckboxList>
+            <SubmitButton type="submit">Submit Transaction</SubmitButton>
+            <Logout />
+          </form>
+        </InputSection>
+
+        <TransactionsSection>
+          <h3>Transactions:</h3>
+          <StyledButton
+            onClick={() =>
+              setSelectedTransactions(transactions.map((_, index) => index))
+            }
+          >
+            Select All
+          </StyledButton>
+          <TransactionsContainer>
+            {transactions.map((transaction, index) => (
+              <div
+                key={index}
+                className={
+                  selectedTransactions.includes(index) ? "selected" : ""
+                }
+              >
+                <TransactionCheckbox
+                  type="checkbox"
+                  checked={selectedTransactions.includes(index)}
+                  onChange={() => toggleTransactionSelection(index)}
+                />
+                {`${transaction.payer} paid ${transaction.payee} ₹${transaction.amount}`}
+              </div>
             ))}
-        </CheckboxList>
-      </div>
-
-      <Button onClick={handleSubmit}>Submit Transaction</Button>
-      <Button onClick={handleFinalizeTransactions}>Finalize Transactions</Button>
-
-      <div>
-        <h3>Transactions:</h3>
-        <TransactionsContainer>
-          {transactions.length > 0 ? (
-            <>
-              {[...Array(Math.ceil(transactions.length / 10)).keys()].map(
-                (colIndex) => (
-                  <TransactionColumn key={colIndex}>
-                    {transactions
-                      .slice(colIndex * 10, (colIndex + 1) * 10)
-                      .map((transaction, index) => (
-                        <label key={index}>
-                          <input
-                            type="checkbox"
-                            checked={selectedTransactions.includes(index)}
-                            onChange={() => toggleTransactionSelection(index)}
-                          />
-                          {transaction.payer} paid {transaction.amount} for {" "}
-                          {transaction.payee}
-                        </label>
-                      ))}
-                  </TransactionColumn>
-                )
-              )}
-            </>
-          ) : (
-            <p>No transactions recorded.</p>
-          )}
-        </TransactionsContainer>
-
-        {selectedTransactions.length > 0 && (
-          <Button onClick={removeSelectedTransactions}>
+          </TransactionsContainer>
+          <FinalizeButton onClick={handleFinalizeTransactions}>
+            Finalize Transactions
+          </FinalizeButton>
+          <StyledButton onClick={removeSelectedTransactions}>
             Remove Selected Transactions
-          </Button>
-        )}
-      </div>
-    </PageContainer>
+          </StyledButton>
+        </TransactionsSection>
+      </PageContainer>
+    </>
   );
 };
 

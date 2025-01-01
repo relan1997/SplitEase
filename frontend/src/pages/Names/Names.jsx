@@ -148,7 +148,6 @@ const Names = () => {
   const [selectedNames, setSelectedNames] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   useEffect(() => {
     const users = loadState("users", []);
     setNames(users);
