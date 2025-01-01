@@ -318,11 +318,6 @@ const Transactions = () => {
 
       dispatch(addTransaction({ data: [...transactions, validTransactions] }));
       setTransactions((prev) => [...prev, ...validTransactions]);
-      alert(
-        `Transaction recorded!\nPayer: ${payerName}\nAmount: ${amount}\nPaid for: ${selectedPeople.join(
-          ", "
-        )}`
-      );
 
       setPayerName("");
       setAmount("");

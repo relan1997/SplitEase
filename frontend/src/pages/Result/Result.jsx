@@ -1,7 +1,7 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
-
 const FontPreconnect = () => (
   <>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -33,7 +33,7 @@ const GlobalStyle = createGlobalStyle`
 const Container = styled.div`
   background-color: #c4dad2;
   color: #16423c;
-  font-family: 'Noto Serif JP', serif;
+  font-family: "Noto Serif JP", serif;
   min-height: 100vh;
   width: 100vw;
   display: flex;
@@ -87,6 +87,31 @@ const Result = () => {
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
+    axios
+      .post(
+        "http://localhost:8080/protect",
+        {},
+        {
+          headers: {
+            Authorization: localStorage.getItem("authToken"),
+          },
+        }
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          console.log("You are authorized");
+        } else {
+          console.log("Not Authorized");
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        console.log("Some Error", err);
+        navigate("/login");
+      });
+  });
+
+  useEffect(() => {
     if (result?.transactions) {
       console.log(result.transactions);
       setTransactions(result.transactions);
@@ -97,7 +122,9 @@ const Result = () => {
     return (
       <Container>
         <FontPreconnect />
-        <Message>No data available. Please finalize transactions first.</Message>
+        <Message>
+          No data available. Please finalize transactions first.
+        </Message>
       </Container>
     );
   }
