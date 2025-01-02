@@ -3,15 +3,22 @@ import cors from "cors";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import userModel from "./models/userModel.js";
 import { calculateNetBalances } from "./helper/calculateNetBalances.js";
 import { maxFlowAlgo } from "./helper/maxFlowAlgo.js";
-import { bfs } from "./helper/bfs.js";
 import { createFlowGraphMatrix } from "./helper/createFlowGraphMatrix.js";
+
+// Load environment variables
+dotenv.config();
+
+const PORT = process.env.PORT || 3000;
+const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING;
+const JWT_SECRET = process.env.JWT_SECRET;
+const BCRYPT_SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS);
+
 mongoose
-  .connect(
-    "mongodb+srv://harshal:LtXwFJc0sH8O96GX@cluster0.u57rmde.mongodb.net/splitEase?retryWrites=true&w=majority&appName=Cluster0"
-  )
+  .connect(DB_CONNECTION_STRING)
   .then(() => {
     console.log("DB Connected");
   })
@@ -26,14 +33,12 @@ app.use(express.json());
 const blacklist = [];
 const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization");
-  console.log(token);
-  console.log("Inside middleware", token, blacklist);
   if (!token)
     return res.status(401).json({ message: "Token missing or invalid" });
   if (blacklist.includes(token)) {
     return res.status(403).json({ message: "Token has been invalidated" });
   }
-  jwt.verify(token, "1234", (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: "Token is invalid" });
     req.user = user;
     next();
@@ -43,14 +48,12 @@ const authenticateToken = (req, res, next) => {
 app.post("/register", async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log("Inside Register", username, password);
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
     const user = new userModel({ username, password: hashedPassword });
-    console.log(user);
     await user.save();
     res.status(201).json({ message: "User Registered" });
   } catch (error) {
-    res.status(500).json({ error: error });
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -67,7 +70,7 @@ app.post("/login", async (req, res) => {
     }
     const token = jwt.sign(
       { userId: user._id, username: user.username },
-      "1234",
+      JWT_SECRET,
       {
         expiresIn: "1h",
       }
@@ -82,12 +85,9 @@ app.post("/protect", async (req, res) => {
   const token = req.header("Authorization");
   if (!token) return res.status(401).json({ error: "Access denied" });
   try {
-    console.log(token);
-    const decoded = jwt.verify(token, "1234");
-    console.log(decoded);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.userId = decoded.userId;
     req.username = decoded.username;
-    console.log(req.userId, req.username);
     res.status(200).json({ message: "Valid Token", username: req.username });
   } catch (error) {
     if (error.name === "TokenExpiredError") {
@@ -100,7 +100,6 @@ app.post("/protect", async (req, res) => {
 
 app.post("/logout", authenticateToken, (req, res) => {
   const token = req.header("Authorization");
-  console.log("Inside route", token);
   if (!token) {
     return res.status(400).json({ message: "No token provided" });
   }
@@ -109,7 +108,7 @@ app.post("/logout", authenticateToken, (req, res) => {
 });
 
 app.post("/find_min_transactions", authenticateToken, (req, res) => {
-  const { names:users, transactions } = req.body;
+  const { names: users, transactions } = req.body;
 
   if (!Array.isArray(users) || users.length === 0) {
     return res.status(400).send("Invalid users array.");
@@ -134,23 +133,12 @@ app.post("/find_min_transactions", authenticateToken, (req, res) => {
     nameToIndex
   );
 
-  const flowGraph = createFlowGraphMatrix(
-    names,
-    creditors,
-    debtors,
-    nameToIndex
-  );
+  const flowGraph = createFlowGraphMatrix(names, creditors, debtors, nameToIndex);
 
   const paths = [];
   const amtPending = [];
 
-  const maxFlow = maxFlowAlgo(
-    flowGraph,
-    0,
-    flowGraph.length - 1,
-    paths,
-    amtPending
-  );
+  const maxFlow = maxFlowAlgo(flowGraph, 0, flowGraph.length - 1, paths, amtPending);
 
   const resultPaths = paths.map((path, index) => ({
     from: names[path[1]],
@@ -158,14 +146,12 @@ app.post("/find_min_transactions", authenticateToken, (req, res) => {
     amount: amtPending[index],
   }));
 
-  console.log(maxFlow,resultPaths)
-
   res.json({
     maxFlow,
     transactions: resultPaths,
   });
 });
 
-app.listen(8080, () => {
-  console.log("Listening on Port 8080");
+app.listen(PORT, () => {
+  console.log(`Listening on Port ${PORT}`);
 });

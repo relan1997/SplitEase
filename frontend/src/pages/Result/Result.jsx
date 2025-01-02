@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
+
 const FontPreconnect = () => (
   <>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -83,6 +84,7 @@ const ListItem = styled.li`
 
 const Result = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const result = location.state?.result; // Access the result from state
   const [transactions, setTransactions] = useState([]);
 
@@ -109,12 +111,16 @@ const Result = () => {
         console.log("Some Error", err);
         navigate("/login");
       });
-  });
+  }, []);
 
   useEffect(() => {
     if (result?.transactions) {
-      console.log(result.transactions);
-      setTransactions(result.transactions);
+      const roundedTransactions = result.transactions.map((transaction) => ({
+        ...transaction,
+        amount: parseFloat(transaction.amount).toFixed(2),
+      }));
+      console.log(roundedTransactions);
+      setTransactions(roundedTransactions);
     }
   }, [result]);
 
@@ -139,7 +145,7 @@ const Result = () => {
           <ListItem key={index}>
             <span>{transaction.from}</span>
             <span>pays</span>
-            <span>{transaction.amount}</span>
+            <span>₹{transaction.amount}</span>
             <span>to</span>
             <span>{transaction.to}</span>
           </ListItem>

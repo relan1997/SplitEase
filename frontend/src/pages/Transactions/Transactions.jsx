@@ -318,7 +318,6 @@ const Transactions = () => {
 
       dispatch(addTransaction({ data: [...transactions, validTransactions] }));
       setTransactions((prev) => [...prev, ...validTransactions]);
-
       setPayerName("");
       setAmount("");
       setSelectedPeople([]);
