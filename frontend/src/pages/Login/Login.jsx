@@ -132,7 +132,7 @@ const Login = () => {
       return;
     }
     axios
-      .post("http://localhost:8080/login", {
+      .post("https://splitease-75wc.onrender.com/login", {
         username: username,
         password: password,
       })

@@ -136,10 +136,10 @@ const Register = () => {
     }
 
     axios
-      .post("http://localhost:8080/register", { username, password })
+      .post("https://splitease-75wc.onrender.com/register", { username, password })
       .then((res) => {
         alert("Registration successful! Logging you in...");
-        return axios.post("http://localhost:8080/login", {
+        return axios.post("https://splitease-75wc.onrender.com/login", {
           username,
           password,
         });

@@ -207,7 +207,7 @@ const Transactions = () => {
   const handleFinalizeTransactions = () => {
     axios
       .post(
-        "http://localhost:8080/find_min_transactions",
+        "https://splitease-75wc.onrender.com/find_min_transactions",
         {
           names,
           transactions,
@@ -260,7 +260,7 @@ const Transactions = () => {
   useEffect(() => {
     axios
       .post(
-        "http://localhost:8080/protect",
+        "https://splitease-75wc.onrender.com/protect",
         {},
         {
           headers: {

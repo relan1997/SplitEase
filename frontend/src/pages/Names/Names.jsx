@@ -157,7 +157,7 @@ const Names = () => {
     // Authorization check
     axios
       .post(
-        "http://localhost:8080/protect",
+        "https://splitease-75wc.onrender.com/protect",
         {},
         {
           headers: {
